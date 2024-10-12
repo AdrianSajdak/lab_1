@@ -2,7 +2,7 @@ import json
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from typing import Type
 
-
+submitted_names = []
 # Define the request handler class by extending BaseHTTPRequestHandler.
 # This class will handle HTTP requests that the server receives.
 class SimpleRequestHandler(BaseHTTPRequestHandler):
@@ -29,29 +29,30 @@ class SimpleRequestHandler(BaseHTTPRequestHandler):
 
     # Handle GET requests.
     # When the client sends a GET request, this method will be called.
-    def do_GET(self) -> None:
-        # Set the HTTP response status to 200 OK, which means the request was successful.
-        self.send_response(200)
+    
+    # def do_GET(self) -> None:
+    #     # Set the HTTP response status to 200 OK, which means the request was successful.
+    #     self.send_response(200)
 
-        # Set the Content-Type header to application/json, meaning the response will be in JSON format.
-        self.send_header('Content-type', 'application/json')
+    #     # Set the Content-Type header to application/json, meaning the response will be in JSON format.
+    #     self.send_header('Content-type', 'application/json')
 
-        # Allow any domain to make requests to this server (CORS header).
-        self.send_header('Access-Control-Allow-Origin', '*')
+    #     # Allow any domain to make requests to this server (CORS header).
+    #     self.send_header('Access-Control-Allow-Origin', '*')
 
-        # Finish sending headers
-        self.end_headers()
+    #     # Finish sending headers
+    #     self.end_headers()
 
-        # Prepare the response data, which will be returned in JSON format.
-        # The response contains a simple message and the path of the request.
-        response: dict = {
-            "message": "This is a GET request",
-            "path": self.path
-        }
+    #     # Prepare the response data, which will be returned in JSON format.
+    #     # The response contains a simple message and the path of the request.
+    #     response: dict = {
+    #         "message": "This is a GET request",
+    #         "path": self.path
+    #     }
 
-        # Convert the response dictionary to a JSON string and send it back to the client.
-        # `self.wfile.write()` is used to send the response body.
-        self.wfile.write(json.dumps(response).encode())
+    #     # Convert the response dictionary to a JSON string and send it back to the client.
+    #     # `self.wfile.write()` is used to send the response body.
+    #     self.wfile.write(json.dumps(response).encode())
 
     # Handle POST requests.
     # This method is called when the client sends a POST request.
@@ -67,12 +68,15 @@ class SimpleRequestHandler(BaseHTTPRequestHandler):
         # We expect the POST request body to contain JSON-formatted data.
         received_data: dict = json.loads(post_data.decode())
 
+        # Append received name to the list
+        submitted_names.append({
+            "firstName": received_data["firstName"],
+            "lastName": received_data["lastName"]
+        })
+
         # Prepare the response data.
         # It includes a message indicating it's a POST request and the data we received from the client.
-        response: dict = {
-            "message": "This is a POST request",
-            "received": received_data
-        }
+        response: dict = submitted_names
 
         # Send the response headers.
         # Set the status to 200 OK and indicate the response content will be in JSON format.
