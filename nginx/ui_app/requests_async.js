@@ -18,15 +18,14 @@
 async function sendPostRequest() {
     const firstName = document.getElementById("firstName").value;
     const lastName = document.getElementById("lastName").value;
+
+    console.log("First Name: ", firstName);
+    console.log("Last Name: ", lastName);
+
     const data = {
         firstName: firstName,
         lastName: lastName
     };
-
-    if (!firstName || !lastName) {
-        console.error('First name or last name is missing');
-        return;
-    }
 
     try {
         const response = await fetch("http://localhost:8000/", {
@@ -34,22 +33,31 @@ async function sendPostRequest() {
             headers: {
                 "Content-Type": "application/json"
             },
-            BODY: JSON.stringify(data)
+            body: JSON.stringify(data)
         });
         const responseData = await response.json();
 
+        console.log("Odpowiedź z serwera:", responseData);
+
         // Updating table with new data
+
         updateTable(responseData);
+
     } catch (error) {
         console.error('Error:', error);
     }
 }
 
 async function updateTable(data) {
+    // if (!Array.isArray(data)) {
+    //     console.error("Oczekiwano tablicy, ale otrzymano:", data);
+    //     return;
+    // }
+
     const table = document.getElementById("nameTable");
     table.innerHTML = "<tr><th>First Name</th><th>Last Name</th></tr>";
 
-    data.array.forEach(element => {
+    data.forEach(element => {
         const row = table.insertRow();
         const firstNameCell = row.insertCell(0);
         const lastNameCell = row.insertCell(1);

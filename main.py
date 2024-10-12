@@ -29,7 +29,7 @@ class SimpleRequestHandler(BaseHTTPRequestHandler):
 
     # Handle GET requests.
     # When the client sends a GET request, this method will be called.
-    
+
     # def do_GET(self) -> None:
     #     # Set the HTTP response status to 200 OK, which means the request was successful.
     #     self.send_response(200)
@@ -64,9 +64,21 @@ class SimpleRequestHandler(BaseHTTPRequestHandler):
         # Read the request body based on the content length.
         post_data: bytes = self.rfile.read(content_length)
 
+        if not post_data:
+            self.send_response(400)  # Zwróć kod błędu 400 (Bad Request) w przypadku pustych danych
+            self.end_headers()
+            return
+
+        try:
+            received_data = json.loads(post_data.decode())
+        except json.JSONDecodeError as e:
+            self.send_response(400)  # Zwróć kod błędu 400 w przypadku błędu dekodowania JSON
+            self.end_headers()
+            return
+
         # Decode the received byte data and parse it as JSON.
         # We expect the POST request body to contain JSON-formatted data.
-        received_data: dict = json.loads(post_data.decode())
+        received_data = json.loads(post_data.decode())
 
         # Append received name to the list
         submitted_names.append({
@@ -76,8 +88,12 @@ class SimpleRequestHandler(BaseHTTPRequestHandler):
 
         # Prepare the response data.
         # It includes a message indicating it's a POST request and the data we received from the client.
-        response: dict = submitted_names
-
+        response = []
+        for name in submitted_names:
+            response.append({
+                "firstName": name["firstName"],
+                "lastName": name["lastName"]
+            })
         # Send the response headers.
         # Set the status to 200 OK and indicate the response content will be in JSON format.
         self.send_response(200)
@@ -91,7 +107,6 @@ class SimpleRequestHandler(BaseHTTPRequestHandler):
 
         # Convert the response dictionary to a JSON string and send it back to the client.
         self.wfile.write(json.dumps(response).encode())
-
 
 # Function to start the server.
 # It takes parameters to specify the server class, handler class, and port number.
@@ -116,3 +131,4 @@ def run(
 # It calls the `run()` function to start the server.
 if __name__ == '__main__':
     run()
+    
