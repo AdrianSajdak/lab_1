@@ -16,12 +16,17 @@
 
 // Function to send POST request
 async function sendPostRequest() {
-    const fisrtName = document.getElementById("postFirstNameField").value;
-    const lastName = document.getElementById("postLastNameField").value;
+    const firstName = document.getElementById("firstName").value;
+    const lastName = document.getElementById("lastName").value;
     const data = {
         firstName: firstName,
         lastName: lastName
     };
+
+    if (!firstName || !lastName) {
+        console.error('First name or last name is missing');
+        return;
+    }
 
     try {
         const response = await fetch("http://localhost:8000/", {
